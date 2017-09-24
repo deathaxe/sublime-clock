@@ -4,6 +4,9 @@ import sublime
 
 
 class Clock(object):
+
+    CLOCK_ID = '00_clock'
+
     running = False
 
     @classmethod
@@ -14,6 +17,11 @@ class Clock(object):
     @classmethod
     def stop(cls):
         cls.running = False
+        for window in sublime.windows():
+            try:
+                window.active_view().erase_status(cls.CLOCK_ID)
+            except:
+                pass
 
     @classmethod
     def _tick(cls):
@@ -49,7 +57,7 @@ class Clock(object):
         # update the clock of all windows
         for window in sublime.windows():
             try:
-                window.active_view().set_status('00_clock', text)
+                window.active_view().set_status(cls.CLOCK_ID, text)
             except:
                 pass
 
