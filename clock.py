@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import sublime
+import sublime_plugin
 
 
 class Clock(object):
@@ -24,11 +25,14 @@ class Clock(object):
                 pass
 
     @classmethod
+    def paint(cls, view):
+        view.set_status(cls.CLOCK_ID, cls.text)
+
+    @classmethod
     def _tick(cls):
         try:
             if cls.running:
-                cls._update()
-                sublime.set_timeout(cls._tick, 5000)
+                sublime.set_timeout(cls._tick, cls._update())
         except Exception as error:
             print("Clock:", error)
             cls.stop()
@@ -53,13 +57,20 @@ class Clock(object):
         #  - full icons to be displayed between x:45 and x+1:15
         inow = now + datetime.timedelta(minutes=15)
         icon = chr(0x1F550 + (inow.hour - 1) % 12 + 12 * (inow.minute >= 30))
-        text = icon + now.strftime(' %H:%M | %d.%m.%Y')
+        cls.text = icon + now.strftime(' %H:%M | %d.%m.%Y')
         # update the clock of all windows
         for window in sublime.windows():
             try:
-                window.active_view().set_status(cls.CLOCK_ID, text)
+                cls.paint(window.active_view())
             except:
                 pass
+        return 1000 * (60 - now.second)
+
+
+class EventListener(sublime_plugin.EventListener):
+    def on_activated(self, view):
+        """Redraw in case the view belongs to a new window."""
+        Clock.paint(view)
 
 
 def plugin_loaded():
