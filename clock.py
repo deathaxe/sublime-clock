@@ -56,8 +56,9 @@ class Clock(object):
         #  - half icons to be displayed between x:15 and x:45
         #  - full icons to be displayed between x:45 and x+1:15
         inow = now + datetime.timedelta(minutes=15)
-        icon = chr(0x1F550 + (inow.hour - 1) % 12 + 12 * (inow.minute >= 30))
-        cls.text = icon + now.strftime(' %H:%M | %d.%m.%Y')
+        clock_icon = chr(0x1F550 + (inow.hour - 1) % 12 + 12 * (inow.minute >= 30))
+        cal_icon = chr(0x1F4C5)
+        cls.text = ' '.join((clock_icon, now.strftime('%H:%M'), cal_icon, now.strftime('%d.%m.%Y')))
         # update the clock of all windows
         for window in sublime.windows():
             try:
