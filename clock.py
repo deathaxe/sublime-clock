@@ -7,6 +7,7 @@ import sublime_plugin
 class Clock(object):
 
     CLOCK_ID = '00_clock'
+    text = ''
 
     running = False
 
